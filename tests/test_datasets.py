@@ -1,7 +1,9 @@
 import os
 
-from nose.tools import (assert_equal, assert_is_instance, assert_greater,
-                        assert_raises)
+from nose.tools import assert_is_instance
+from sklearn.utils.testing import (assert_equal,
+                                   assert_greater,
+                                   assert_raises)
 
 import oddt
 from oddt.datasets import pdbbind, dude

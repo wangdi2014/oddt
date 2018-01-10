@@ -3,9 +3,11 @@ from tempfile import NamedTemporaryFile
 
 import numpy as np
 
-from nose.tools import nottest
-from nose.tools import assert_in, assert_not_in, assert_equal
-from sklearn.utils.testing import (assert_true,
+from unittest import skip
+from sklearn.utils.testing import (assert_in,
+                                   assert_not_in,
+                                   assert_equal,
+                                   assert_true,
                                    assert_array_equal,
                                    assert_array_almost_equal)
 
@@ -42,7 +44,7 @@ def test_close_contacts():
                         6, 2, 6, 5, 1, 8, 6, 5, 7, 4])
 
 
-@nottest
+@skip('skipping test')
 def test_hbonds():
     """H-Bonds test"""
     hbonds_count = [hbonds(rec, mol)[2].sum() for mol in mols]
@@ -55,7 +57,7 @@ def test_hbonds():
                         6, 5, 5, 7, 7, 6, 8, 6, 4, 5])
 
 
-@nottest
+@skip('skipping test')
 def test_halogenbonds():
     """Halogen-Bonds test"""
     halogenbonds_count = [len(halogenbonds(rec, mol)[2]) for mol in mols]
@@ -64,7 +66,7 @@ def test_halogenbonds():
                        [])
 
 
-@nottest
+@skip('skipping test')
 def test_pi_stacking():
     """Pi-stacking test"""
     pi_parallel_count = [pi_stacking(rec,
@@ -82,7 +84,7 @@ def test_pi_stacking():
                        [])
 
 
-@nottest
+@skip('skipping test')
 def test_salt_bridges():
     """Salt bridges test"""
     salt_bridges_count = [len(salt_bridges(rec, mol)[0]) for mol in mols]
@@ -96,7 +98,7 @@ def test_salt_bridges():
                         6, 5, 5, 7, 7, 6, 8, 6, 4, 5])
 
 
-@nottest
+@skip('skipping test')
 def test_pi_cation():
     """Pi-cation test"""
     pi_cation_count = [len(pi_cation(rec, mol)[2]) for mol in mols]

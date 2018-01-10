@@ -1,6 +1,8 @@
-from nose.tools import (assert_less_equal, assert_less, assert_greater_equal,
-                        assert_greater, assert_almost_equal,
-                        assert_equal)
+from sklearn.utils.testing import (assert_less_equal,
+                                   assert_less,
+                                   assert_greater_equal,
+                                   assert_greater, assert_almost_equal,
+                                   assert_equal)
 
 import numpy as np
 

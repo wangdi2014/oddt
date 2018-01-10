@@ -1,8 +1,10 @@
 import os
 from tempfile import NamedTemporaryFile
 
-from nose.tools import assert_in, assert_not_in, assert_equal
-from sklearn.utils.testing import (assert_true,
+from sklearn.utils.testing import (assert_in,
+                                   assert_not_in,
+                                   assert_equal,
+                                   assert_true,
                                    assert_almost_equal,
                                    assert_array_equal,
                                    assert_array_almost_equal)

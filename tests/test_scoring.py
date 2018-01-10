@@ -4,8 +4,10 @@ from tempfile import mkdtemp, NamedTemporaryFile
 
 import numpy as np
 
-from nose.tools import assert_almost_equal, assert_is_instance, assert_equal
-from sklearn.utils.testing import assert_array_almost_equal
+from nose.tools import assert_is_instance
+from sklearn.utils.testing import (assert_array_almost_equal,
+                                   assert_almost_equal,
+                                   assert_equal)
 from sklearn.metrics import r2_score
 
 import oddt

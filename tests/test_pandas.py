@@ -1,8 +1,12 @@
 import os
 from tempfile import NamedTemporaryFile
 
-from nose.tools import assert_in, assert_not_in, assert_equal, assert_is_instance
-from sklearn.utils.testing import assert_true, assert_array_equal
+from nose.tools import assert_is_instance
+from sklearn.utils.testing import (assert_in,
+                                   assert_not_in,
+                                   assert_equal,
+                                   assert_true,
+                                   assert_array_equal)
 import pandas as pd
 
 import oddt

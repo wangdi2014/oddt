@@ -5,9 +5,9 @@ from six.moves.cPickle import loads, dumps
 import numpy as np
 import pandas as pd
 
-from nose.tools import assert_equal
 from sklearn.utils.testing import (assert_true,
                                    assert_false,
+                                   assert_equal,
                                    assert_dict_equal,
                                    assert_array_equal,
                                    assert_array_almost_equal,
