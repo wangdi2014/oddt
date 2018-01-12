@@ -1,5 +1,6 @@
 import os
 from tempfile import mkdtemp, NamedTemporaryFile
+from itertools import product
 
 from sklearn.utils.testing import (assert_in,
                                    assert_equal,
@@ -9,6 +10,8 @@ from sklearn.utils.testing import (assert_in,
                                    assert_raises_regexp)
 
 import pandas as pd
+
+from nose2.tools import params
 
 import oddt
 from oddt.spatial import rmsd
@@ -184,7 +187,12 @@ def test_vs_similarity():
     assert_raises(ValueError, vs.similarity, 'sift', query=ref_mol)
 
 
-def test_vs_scoring():
+models = [nnscore(n_jobs=1)] + [rfscore(version=v, n_jobs=1) for v in [1, 2, 3]]
+pars = tuple(map(tuple, product((2007, 2013, 2016), models)))
+
+
+@params(*pars)
+def test_vs_scoring(pdbbind_v, model):
     protein = next(oddt.toolkit.readfile('pdb', xiap_protein))
     protein.protein = True
 
@@ -193,30 +201,22 @@ def test_vs_scoring():
     pdbbind_versions = (2007, 2013, 2016)
 
     pdbbind_dir = os.path.join(data_dir, 'pdbbind')
-    for pdbbind_v in pdbbind_versions:
-        version_dir = os.path.join(data_dir, 'v%s' % pdbbind_v)
-        if not os.path.isdir(version_dir):
-            os.symlink(pdbbind_dir, version_dir)
+    version_dir = os.path.join(data_dir, 'v%s' % pdbbind_v)
+    if not os.path.isdir(version_dir):
+        os.symlink(pdbbind_dir, version_dir)
 
     filenames = []
     # train mocked SFs
-    for model in [nnscore(n_jobs=1)] + [rfscore(version=v, n_jobs=1)
-                                        for v in [1, 2, 3]]:
-            model.gen_training_data(data_dir, pdbbind_versions=pdbbind_versions,
-                                    home_dir=home_dir)
-            filenames.append(model.train(home_dir=home_dir))
+    model.gen_training_data(data_dir, pdbbind_versions=pdbbind_versions,
+                            home_dir=home_dir)
+    filenames.append(model.train(home_dir=home_dir))
     vs = virtualscreening(n_cpu=1)
     vs.load_ligands('sdf', xiap_actives_docked)
     # error if no protein is fed
     assert_raises(ValueError, vs.score, 'nnscore')
     # bad sf name
     assert_raises(ValueError, vs.score, 'bad_sf', protein=protein)
-    vs.score('nnscore', protein=xiap_protein)
-    vs.score('nnscore_pdbbind2016', protein=protein)
-    vs.score('rfscore_v1', protein=protein)
-    vs.score('rfscore_v1_pdbbind2016', protein=protein)
-    vs.score('rfscore_v2', protein=protein)
-    vs.score('rfscore_v3', protein=protein)
+    vs.score(model, protein=xiap_protein)
     # use pickle directly
     vs.score(filenames[0], protein=protein)
     # pass SF object directly
@@ -267,5 +267,5 @@ def test_vs_scoring():
     # remove symlinks
     for pdbbind_v in pdbbind_versions:
         version_dir = os.path.join(data_dir, 'v%s' % pdbbind_v)
-        if os.path.islink(version_dir):
-            os.unlink(version_dir)
+        # if os.path.islink(version_dir):
+        #     os.unlink(version_dir)
