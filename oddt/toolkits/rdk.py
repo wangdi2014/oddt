@@ -861,24 +861,35 @@ class Molecule(object):
         else:
             polar_atoms = None
 
-        self.Mol = Chem.AddHs(self.Mol, addCoords=True, onlyOnAtoms=polar_atoms, **kwargs)
+        if rdkit.__version__ > '2018.03':
+            self.Mol = Chem.AddHs(self.Mol,
+                                  addCoords=True,
+                                  onlyOnAtoms=polar_atoms,
+                                  addResidueInfo=True,
+                                  **kwargs)
+            self._clear_cache()
+        else:
+            self.Mol = Chem.AddHs(self.Mol,
+                                  addCoords=True,
+                                  onlyOnAtoms=polar_atoms,
+                                  **kwargs)
+            # merge Hs to residues
+            if self.protein:
+                for n, atom in enumerate(self.Mol.GetAtoms()):
+                    if atom.GetAtomicNum() == 1:
+                        assert atom.GetDegree() == 1
+                        neighbor_atom = atom.GetNeighbors()[0]
+                        res = neighbor_atom.GetPDBResidueInfo()
+                        if res is not None:
+                            atom.SetMonomerInfo(
+                                Chem.AtomPDBResidueInfo(atomName=' H  ',
+                                                        serialNumber=n+1,
+                                                        residueName=res.GetResidueName(),
+                                                        residueNumber=res.GetResidueNumber(),
+                                                        chainId=res.GetChainId(),
+                                                        insertionCode="",
+                                                        isHeteroAtom=res.GetIsHeteroAtom()))
         self._clear_cache()
-        # merge Hs to residues
-        if self.protein:
-            for n, atom in enumerate(self.Mol.GetAtoms()):
-                if atom.GetAtomicNum() == 1:
-                    assert atom.GetDegree() == 1
-                    neighbor_atom = atom.GetNeighbors()[0]
-                    res = neighbor_atom.GetPDBResidueInfo()
-                    if res is not None:
-                        atom.SetMonomerInfo(
-                            Chem.AtomPDBResidueInfo(atomName=' H  ',
-                                                    serialNumber=n+1,
-                                                    residueName=res.GetResidueName(),
-                                                    residueNumber=res.GetResidueNumber(),
-                                                    chainId=res.GetChainId(),
-                                                    insertionCode="",
-                                                    isHeteroAtom=res.GetIsHeteroAtom()))
 
     def removeh(self, **kwargs):
         """Remove hydrogens."""
